@@ -5,9 +5,8 @@ ENV TS_SOCKET=/tmp/tailscaled.sock \
     TS_HOSTNAME=railway-ts \
     PORT=8080
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends python3 ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+# tailscale image is Alpine-based; install Python for the tiny health server
+RUN apk add --no-cache python3
 
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
