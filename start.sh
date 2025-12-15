@@ -4,7 +4,6 @@ set -eu
 TS_SOCKET="${TS_SOCKET:-/tmp/tailscaled.sock}"
 TS_STATE_DIR="${TS_STATE_DIR:-/var/lib/tailscale}"
 TS_HOSTNAME="${TS_HOSTNAME:-railway-ts}"
-ADVERTISE_EXIT_NODE="${ADVERTISE_EXIT_NODE:-true}"
 PORT="${PORT:-8080}"
 
 if [ -z "${TAILSCALE_AUTHKEY:-}" ]; then
@@ -38,13 +37,12 @@ while [ $i -lt 50 ]; do
   sleep 0.2
 done
 
-TAILSCALE_UP_FLAGS="--authkey=${TAILSCALE_AUTHKEY} --accept-dns=false --accept-routes=false --hostname=${TS_HOSTNAME} --reset"
-
-if [ "${ADVERTISE_EXIT_NODE}" = "true" ]; then
-  TAILSCALE_UP_FLAGS="${TAILSCALE_UP_FLAGS} --advertise-exit-node"
-fi
-
-tailscale --socket="${TS_SOCKET}" up ${TAILSCALE_UP_FLAGS}
+tailscale --socket="${TS_SOCKET}" up \
+  --authkey="${TAILSCALE_AUTHKEY}" \
+  --accept-dns=false \
+  --accept-routes=false \
+  --hostname="${TS_HOSTNAME}" \
+  --reset
 
 # Exit if tailscaled stops unexpectedly
 ( wait "$TAILSCALED_PID"; echo "tailscaled exited" >&2; kill $$ ) 2>/dev/null &
