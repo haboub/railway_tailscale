@@ -9,15 +9,15 @@ Host personal VPN on Railway using Tailscale
 ## How to deploy on Railway (userspace networking)
 
 1. Generate an auth key in the Tailscale admin console ([Settings → Keys](https://login.tailscale.com/admin/settings/keys)). Ephemeral keys are supported.
-2. Create a Railway service from this repo and set the variable `TAILSCALE_AUTHKEY` to your generated key.
-3. Deploy. The container starts `tailscaled` in userspace mode (`--tun=userspace-networking`) and keeps an HTTP health endpoint running on `$PORT`.
+2. Create a Railway service from this repo and set the variable `TAILSCALE_AUTHKEY` to your generated key. To disable exit-node advertising, set `ADVERTISE_EXIT_NODE=false` (default is true).
+3. Deploy. The container starts `tailscaled` in userspace mode (`--tun=userspace-networking`), advertises itself as an exit node, and keeps an HTTP health endpoint running on `$PORT`.
 4. Validate from a Railway shell:
    ```sh
    railway run sh
    tailscale --socket=/tmp/tailscaled.sock status
    tailscale --socket=/tmp/tailscaled.sock netcheck
    ```
-5. Connect your device:
+5. Connect your device (and enable the Railway node as your exit node from the Tailscale client or admin UI):
    ```sh
    tailscale up --login-server=https://login.tailscale.com  # adjust if you use a custom control plane
    ```
