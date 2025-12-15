@@ -17,9 +17,7 @@ mkdir -p "$TS_STATE_DIR" "$(dirname "$TS_SOCKET")"
 tailscaled \
   --state="${TS_STATE_DIR}/tailscaled.state" \
   --socket="${TS_SOCKET}" \
-  --tun=userspace-networking \
-  --socks5-server=localhost:1055 \
-  --outbound-http-proxy-listen=localhost:1055 &
+  --tun=userspace-networking &
 TAILSCALED_PID=$!
 
 cleanup() {
