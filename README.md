@@ -6,39 +6,21 @@ Host personal VPN on Railway using Tailscale
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/uIBpGp?referralCode=androidquartz)
 
-## How to setup
+## How to deploy on Railway (userspace networking)
 
-1. To get started, you should create an account on [tailscale](https://tailscale.com), if you already have an account skip to next step
-
-2. Go to you tailscale admin console settings then to [keys](https://login.tailscale.com/admin/settings/keys)
-
-3. Click on 'Generate auth key ...'
-
-    ![admin_console_keys.png](./readme-screenshots/admin_console_keys.png)
-
-4. Give you key a description then click 'Generate key' when you are finished
-
-    ![generating_auth_key.png](./readme-screenshots/generating_auth_key.png)
-
-    Remember to take a note of the key because you'll see it only once
-
-5. Go to railway and paste in the key in TAILSCALE_AUTHKEY variable
-
-6. Deploy!
-
-7. Go to your tailscale machines and approve railway-app as an exit node
-
-    ![approve_exit_node.png](./readme-screenshots/approve_exit_node.png)
-
-8. Disable key expiry for the machine you just deployed
-
-    ![disable_key_expiry.png](./readme-screenshots/disable_key_expiry.png)
-
-9. Use this command to connect to your VPN
-
-    ```sh
-    tailscale up --exit-node railway-app # or replace railway-app with your hostname
-    ```
+1. Generate an auth key in the Tailscale admin console ([Settings → Keys](https://login.tailscale.com/admin/settings/keys)). Ephemeral keys are supported.
+2. Create a Railway service from this repo and set the variable `TAILSCALE_AUTHKEY` to your generated key.
+3. Deploy. The container starts `tailscaled` in userspace mode (`--tun=userspace-networking`) and keeps an HTTP health endpoint running on `$PORT`.
+4. Validate from a Railway shell:
+   ```sh
+   railway run sh
+   tailscale --socket=/tmp/tailscaled.sock status
+   tailscale --socket=/tmp/tailscaled.sock netcheck
+   ```
+5. Connect your device:
+   ```sh
+   tailscale up --login-server=https://login.tailscale.com  # adjust if you use a custom control plane
+   ```
 
 ## More Info
 
